@@ -37,3 +37,6 @@ yarn run test:unit
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+
+Images from [https://www.jlstms.com/](https://www.jlstms.com/fun-images.html)
