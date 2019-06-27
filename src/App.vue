@@ -4,12 +4,45 @@
       <div id="logoDiv">
         <img id="imageIcon" alt="appIcon" src='./assets/appIcon.svg'>
       </div>
+      <div>
+        <!-- <v-app id="inspire">
+    <div >
+      <v-alert
+        :value="true"
+        color="error"
+      >
+        {{getError}}
+      </v-alert>
+    </div>
+  </v-app> -->
+  </div>
       <!-- <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link> -->
     </div>
     <router-view/>
   </div>
 </template>
+<script>
+export default {
+  mounted(){
+    this.getError();
+  },
+  data: () => ({
+    error: ''
+  }),
+  computed: {
+    getError(){
+      const value = this.$store.state.userError
+        ? this.$store.state.userError
+        : "";
+        console.log(value.length)
+      this.error = value
+      return value;
+    }
+  }
+}
+</script>
+
 
 <style lang="scss">
 #app {
