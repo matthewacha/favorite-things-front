@@ -1,52 +1,59 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <div id="logoDiv">
-        <img id="imageIcon" alt="appIcon" src='./assets/appIcon.svg'>
-      </div>
-      <div>
-        <!-- <v-app id="inspire">
-    <div >
-      <v-alert
-        :value="true"
-        color="error"
-      >
-        {{getError}}
-      </v-alert>
-    </div>
-  </v-app> -->
-  </div>
-      <!-- <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link> -->
-    </div>
+    <Navbar :message="message" :color="color" :notification="notification"/>
     <router-view/>
   </div>
 </template>
 <script>
+import { serverBus } from "@/main";
+import Navbar from "@/views/TheNavbar.vue";
 export default {
-  mounted(){
-    this.getError();
+  components: {
+    Navbar
   },
   data: () => ({
-    error: ''
+    error: "",
+    message: '',
+    value: false,
+    notification: '',
+    color: '',
+    message: ''
   }),
+  methods: {
+        getError(){
+      const value = this.$store.state.responseMessage
+        ? this.$store.state.responseMessage
+        : '';
+      this.message = value
+      return value;
+    }
+  },
+  beforeUpdate(){
+     serverBus.$on('editSuccess', message => {
+       this.message = 'Successfully edited'
+       this.value = true
+       this.notification = 'notification-active'
+       this.color = 'success'
+       this.message = 'Successfully edited'
+       console.log('kkkkkkkkkkkkkk')
+     })
+  },
   computed: {
-    getError(){
-      const value = this.$store.state.userError
-        ? this.$store.state.userError
+    userObject() {
+      const value = this.$store.state.userData.user
+        ? this.$store.state.userData.user.name
         : "";
-        console.log(value.length)
-      this.error = value
+
       return value;
     }
   }
-}
+};
 </script>
 
 
 <style lang="scss">
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
@@ -63,7 +70,7 @@ export default {
     align-self: center;
     #imageIcon {
       height: inherit;
-      width: 30px
+      width: 30px;
     }
   }
   a {

@@ -1,12 +1,12 @@
 <template>
-  <div class="login">
+  <div class="favorites">
     <Favorites />
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import Favorites from '@/components/FavoriteList.vue';
+import Favorites from '@/components/FavoriteDashboard.vue';
 
 export default {
   name: 'favorites',
@@ -16,7 +16,7 @@ export default {
 };
 </script>
 <style lang="scss">
- .login{
+ .favorites{
    height: 775px;
  }
 </style>

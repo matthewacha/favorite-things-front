@@ -8,7 +8,7 @@
         <v-form ref="form" id="form-name" v-model="valid" lazy-validation>
           <v-text-field v-model="name" :rules="nameRules" label="Name" :counter="10" required></v-text-field>
 
-          <v-btn :disabled="!valid" color="success" @click="validate">login</v-btn>
+          <v-btn :disabled="!valid" color="success" @click="validate" >login</v-btn>
         </v-form>
       </div>
     </div>
@@ -21,9 +21,7 @@ import router from '@/router';
 
 export default {
   name: "Login",
-  props: {
-    msg: String
-  },
+  props: {},
   data: () => ({
     valid: true,
     name: "",
@@ -41,8 +39,8 @@ export default {
         try{
             const response = await userService.postUser(data);
             this.$store.dispatch("user", response.data);
-            localStorage.setItem('userObject', response.data)
-            router.push('/about');
+            localStorage.setItem('userObject', JSON.stringify(response.data))
+            router.push('/favorites');
         }catch(e){
             this.$store.dispatch("userError", e.message);
         }
@@ -100,6 +98,6 @@ a {
   }
 }
 .theme--light.v-btn:not(.v-btn--icon):not(.v-btn--flat) {
-  background-color: #2b3e50;
+  background-color: #2b3e50 !important;
 }
 </style>
