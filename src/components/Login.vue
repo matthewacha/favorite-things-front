@@ -21,9 +21,7 @@ import router from '@/router';
 
 export default {
   name: "Login",
-  props: {
-    msg: String
-  },
+  props: {},
   data: () => ({
     valid: true,
     name: "",
@@ -41,8 +39,8 @@ export default {
         try{
             const response = await userService.postUser(data);
             this.$store.dispatch("user", response.data);
-            localStorage.setItem('userObject', response.data)
-            router.push('/about');
+            localStorage.setItem('userObject', JSON.stringify(response.data))
+            router.push('/favorites');
         }catch(e){
             this.$store.dispatch("userError", e.message);
         }
