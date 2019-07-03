@@ -6,7 +6,7 @@
       </div>
       <div class="login-frame-body">
         <v-form ref="form" id="form-name" v-model="valid" lazy-validation>
-          <v-text-field v-model="name" :rules="nameRules" label="Name" :counter="10" required></v-text-field>
+          <v-text-field id="login-input" v-model="name" :rules="nameRules" label="Name" :counter="10" required></v-text-field>
 
           <v-btn :disabled="!valid" color="success" @click="validate" >login</v-btn>
         </v-form>
@@ -16,37 +16,37 @@
 </template>
 
 <script>
-import userService from "@/services/userService";
+import userService from '@/services/userService';
 import router from '@/router';
 
 export default {
-  name: "Login",
+  name: 'Login',
   props: {},
   data: () => ({
     valid: true,
-    name: "",
+    name: '',
     nameRules: [
-      v => !!v || "Name is required",
-      v => (v && v.length <= 20) || "Name must be less than 20 characters"
-    ]
+      v => !!v || 'Name is required',
+      v => (v && v.length <= 20) || 'Name must be less than 20 characters',
+    ],
   }),
   methods: {
     async validate() {
       if (this.$refs.form.validate()) {
         const data = {
-          name: this.$refs.form.$el[0].value
+          name: this.$refs.form.$el[0].value,
         };
-        try{
-            const response = await userService.postUser(data);
-            this.$store.dispatch("user", response.data);
-            localStorage.setItem('userObject', JSON.stringify(response.data))
-            router.push('/favorites');
-        }catch(e){
-            this.$store.dispatch("userError", e.message);
+        try {
+          const response = await userService.postUser(data);
+          this.$store.dispatch('user', response.data);
+          localStorage.setItem('userObject', JSON.stringify(response.data));
+          router.push('/favorites');
+        } catch (e) {
+          this.$store.dispatch('userError', e.message);
         }
       }
     },
-  }
+  },
 };
 </script>
 

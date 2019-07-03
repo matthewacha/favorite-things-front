@@ -1,52 +1,53 @@
 <template>
   <div id="app">
-    <Navbar :message="message" :color="color" :notification="notification"/>
+    <Navbar :alertColor="color"/>
     <router-view/>
   </div>
 </template>
 <script>
-import { serverBus } from "@/main";
-import Navbar from "@/views/TheNavbar.vue";
+import { serverBus } from '@/main';
+import Navbar from '@/views/TheNavbar.vue';
+
 export default {
+  name: 'app',
   components: {
-    Navbar
+    Navbar,
   },
   data: () => ({
-    error: "",
+    error: '',
     message: '',
     value: false,
     notification: '',
     color: '',
-    message: ''
+    message: '',
   }),
   methods: {
-        getError(){
+    getError() {
       const value = this.$store.state.responseMessage
         ? this.$store.state.responseMessage
         : '';
-      this.message = value
+      this.message = value;
       return value;
-    }
+    },
   },
-  beforeUpdate(){
-     serverBus.$on('editSuccess', message => {
-       this.message = 'Successfully edited'
-       this.value = true
-       this.notification = 'notification-active'
-       this.color = 'success'
-       this.message = 'Successfully edited'
-       console.log('kkkkkkkkkkkkkk')
-     })
+  beforeUpdate() {
+    serverBus.$on('editSuccess', (message) => {
+      this.message = 'Successfully edited';
+      this.value = true;
+      this.notification = 'notification-active';
+      this.color = 'success';
+      this.message = 'Successfully edited';
+    });
   },
   computed: {
     userObject() {
       const value = this.$store.state.userData.user
         ? this.$store.state.userData.user.name
-        : "";
+        : '';
 
       return value;
-    }
-  }
+    },
+  },
 };
 </script>
 

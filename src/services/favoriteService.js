@@ -1,4 +1,4 @@
-import Api from "@/services/api";
+import Api from './api';
 
 export default {
   async postFavorite(params) {
@@ -11,7 +11,7 @@ export default {
   },
   async deleteFavorite(param) {
     const response = await Api().delete(
-      `/v1/favorite/${param.id}/?customuser_id=${param.customuser}`
+      `/v1/favorite/${param.id}/?customuser_id=${param.customuser}`,
     );
     return response;
   },

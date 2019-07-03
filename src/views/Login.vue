@@ -20,4 +20,3 @@ export default {
    height: 775px;
  }
 </style>
-
