@@ -1,7 +1,9 @@
+/* eslint-disable no-unused-expressions */
 import Vue from 'vue';
 import { createLocalVue, shallowMount, mount } from '@vue/test-utils';
 import sinon from 'sinon';
 import Vuetify from 'vuetify';
+import store from '../../src/store';
 import { expect } from 'chai';
 import Vuex from 'vuex';
 import userService from '../../src/services/userService';
@@ -17,17 +19,17 @@ const userObject = {
   },
 };
 const localStorage = {
-  getItem: user => JSON.stringify(userObject),
-  setItem: (user) => {},
+  getItem: (user) => { user; return JSON.stringify(userObject); },
+  setItem: (user) => { user; },
 };
 global.localStorage = localStorage;
 
 
 describe('Login.vue', () => {
   it('renders login page properly', () => {
-    const localVue = createLocalVue()
-    localVue.use(Vuetify)
-    const wrapper = shallowMount(Login, { sync: false });
+    const localVue = createLocalVue();
+    localVue.use(Vuetify);
+    const wrapper = shallowMount(Login, { sync: false, store });
     expect(wrapper.html()).to.contain('form');
   });
 });
@@ -39,13 +41,13 @@ describe('test login functionality', () => {
   localVue.use(Vuetify);
 
   beforeEach(() => {
-    actions = {
-      user: sinon.stub(),
-    };
-    store = new Vuex.Store({
-      state: {},
-      actions,
-    });
+    // actions = {
+    //   user: sinon.stub(),
+    // };
+    // store = new Vuex.Store({
+    //   state: {},
+    //   actions,
+    // });
   });
 
   it('redirects when login successful', () => {

@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import Vue from 'vue';
 import Vuex from 'vuex';
 
@@ -6,6 +7,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     userData: {},
+    isLoading: false,
     userError: '',
     favoritesList: [],
     filteredFavorite: [],
@@ -29,13 +31,15 @@ export default new Vuex.Store({
   },
   mutations: {
     user: (state, data) => {
-      state.userData = data;
+      state.userData = data.data;
+      state.isLoading = data.isLoading;
     },
     userError: (state, data) => {
       state.userError = data;
     },
     favoritesList: (state, data) => {
-      state.favoritesList = data;
+      state.favoritesList = data.data;
+      state.isLoading = data.isLoading;
     },
     postFavPending: (state, data) => {
       const old = [...state.favoritesList, data];
@@ -63,7 +67,6 @@ export default new Vuex.Store({
       state.edited = { value: true, favId: data.id };
     },
     filterFav: (state, data) => {
-      console.log(data);
       const newArray = state.favoritesList.filter((fav) => {
         let truthCheck = [];
         truthCheck = data.map((criteria) => {
@@ -82,7 +85,11 @@ export default new Vuex.Store({
       state.filteredFavorite = newArray;
     },
     clearFilter: (state) => {
+      console.log('clearing store')
       state.isFiltered = false;
+    },
+    isLoading: (state, data) => {
+      state.isLoading = data;
     },
   },
   actions: {
@@ -109,6 +116,9 @@ export default new Vuex.Store({
     },
     clearFilter: ({ commit }) => {
       commit('clearFilter');
+    },
+    isLoading: ({ commit }, data) => {
+      commit('isLoading', data);
     },
   },
 });

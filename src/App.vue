@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <Navbar :alertColor="color"/>
+    <notifications position="top center" />
     <router-view/>
   </div>
 </template>
@@ -19,7 +20,6 @@ export default {
     value: false,
     notification: '',
     color: '',
-    message: '',
   }),
   methods: {
     getError() {
@@ -53,6 +53,15 @@ export default {
 
 
 <style lang="scss">
+  .notification-title {
+    // Style for title line 
+  }
+ 
+  .notification-content {
+    // Style for content
+    font-size: 1.25em;
+  }
+
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

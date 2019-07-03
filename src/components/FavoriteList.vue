@@ -30,15 +30,19 @@ export default {
   },
   data: () => ({}),
   methods: {
-    async delFavorite(e) {
-      e.preventDefault();
+    async delFavorite() {
       this.$store.dispatch('delFavPending', this.favoriteItem);
       try {
         const response = await favoriteService.deleteFavorite(this.favoriteItem);
-        //   this.$store.dispatch('delFavConfirm', this.favoriteItem)
-        await serverBus.$emit('submitFavorite');
-      } catch (e) {
-        this.$store.dispatch('userError', e.message);
+        this.$notify({
+              text: 'The item has been successfully deleted',
+              type: 'success',
+            });
+      } catch (error) {
+              this.$notify({
+              text: error.response.data.message,
+              type: 'error',
+            });
       }
     },
     editFavorite() {

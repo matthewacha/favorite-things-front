@@ -24,12 +24,17 @@
         </v-flex>
 
         <v-flex shrink style="width: 60px">
-          <v-text-field v-model="filterCriteria.ranking" class="mt-0" hide-details single-line type="number"></v-text-field>
+          <v-text-field
+            v-model="filterCriteria.ranking"
+            class="mt-0"
+            hide-details
+            single-line
+            type="number"
+          ></v-text-field>
         </v-flex>
       </v-layout>
     </div>
     <v-card-actions>
-      <!-- <v-btn flat color="blue" >Edit</v-btn> -->
       <v-btn flat color="blue" @click="filterFav">filter</v-btn>
       <v-btn flat color="red" @click="clearFilter">clear</v-btn>
     </v-card-actions>
@@ -61,8 +66,7 @@ export default {
       }));
       this.$store.dispatch('filterFav', filterParams);
     },
-    clearFilter(e) {
-      e.preventDefault();
+    clearFilter() {
       this.$store.dispatch('clearFilter');
     },
   },
@@ -77,8 +81,8 @@ export default {
   border-top: 2px solid #e3e3e3;
 }
 .filter-title {
-    font-weight: 600;
-    color: #706e6e;
+  font-weight: 600;
+  color: #706e6e;
 }
 .filter-types {
   padding: 20px;

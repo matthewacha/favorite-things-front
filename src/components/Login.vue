@@ -6,9 +6,16 @@
       </div>
       <div class="login-frame-body">
         <v-form ref="form" id="form-name" v-model="valid" lazy-validation>
-          <v-text-field id="login-input" v-model="name" :rules="nameRules" label="Name" :counter="10" required></v-text-field>
+          <v-text-field
+            id="login-input"
+            v-model="name"
+            :rules="nameRules"
+            label="Name"
+            :counter="10"
+            required
+          ></v-text-field>
 
-          <v-btn :disabled="!valid" color="success" @click="validate" >login</v-btn>
+          <v-btn :disabled="!valid" color="success" @click="validate"><div v-if="isLoading" class="loader"></div>login</v-btn>
         </v-form>
       </div>
     </div>
@@ -24,6 +31,7 @@ export default {
   props: {},
   data: () => ({
     valid: true,
+    isLoading: false,
     name: '',
     nameRules: [
       v => !!v || 'Name is required',
@@ -37,16 +45,35 @@ export default {
           name: this.$refs.form.$el[0].value,
         };
         try {
+          this.isLoading = true;
+          this.valid = false;
           const response = await userService.postUser(data);
-          this.$store.dispatch('user', response.data);
+          this.$notify({
+                        text: 'You have been successfully logged in',
+                        type: 'success',
+                      });
+          this.isLoading = false;
+          this.valid = true;
+          this.$store.dispatch('user', response);
           localStorage.setItem('userObject', JSON.stringify(response.data));
           router.push('/favorites');
         } catch (e) {
+          this.$notify({
+              text: e.message,
+              type: 'error',
+            });
           this.$store.dispatch('userError', e.message);
         }
       }
     },
   },
+  computed: {
+    isLoading(){
+      const isLoading = this.$store.state.isLoading;
+      if(isLoading)this.valid = false;
+      return isLoading;
+    }
+  }
 };
 </script>
 
@@ -99,5 +126,26 @@ a {
 }
 .theme--light.v-btn:not(.v-btn--icon):not(.v-btn--flat) {
   background-color: #2b3e50 !important;
+}
+.loader {
+    border: 5px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 5px solid #3498db;
+    width: 30px;
+    height: 30px;
+    -webkit-animation: spin-data-v-ef68022e 2s linear infinite;
+    animation: spin-data-v-ef68022e 2s linear infinite;
+    position: absolute;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style>

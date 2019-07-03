@@ -21,9 +21,9 @@
         <FilterPane/>
       </div>
       <div class="favorite-dash_panel--right">
-        <div>
-            <v-card id="no-favs" v-if="favoritesList.length == 0">
-              <v-card-title id="no-fav-title" primary-title>
+            <v-card id="no-favs" v-if="favoritesList.length === 0">
+               <div v-if="isLoading" class="loader"></div>
+              <v-card-title v-else id="no-fav-title" primary-title>
                 <div class="no-fav-description" id="description-head">
                   <h3
                     class="headline mb-0 description-title"
@@ -31,8 +31,7 @@
                 </div>
               </v-card-title>
             </v-card>
-        </div>
-        <v-expansion-panel v-model="panel">
+        <v-expansion-panel v-else v-model="panel">
           <v-expansion-panel-content
             v-for="(item,i) in getsFavoritesList || favoritesList"
             :key="i"
@@ -58,7 +57,6 @@
 </template>
 
 <script>
-import router from '@/router';
 import { serverBus } from '../main';
 import favoriteService from '@/services/favoriteService';
 import FavoriteForm from '@/components/FavoritesForm.vue';
@@ -76,6 +74,7 @@ export default {
   data() {
     return {
       favoritesList: [],
+      isLoading: false,
       panel: 0,
       panelForm: -1,
       editedFavorite: {},
@@ -84,13 +83,16 @@ export default {
     };
   },
   async beforeUpdate() {
-    serverBus.$on('editFavorite', (editedFavorite) => {
+    serverBus.$on('editFavorite', () => {
       this.cardTitle = 'EDIT NEW FAVORITE';
       this.panelForm = 0;
     });
 
     await serverBus.$on('submitFavorite', async () => {
-      await this.fecthFavorites();
+      await this.fetchFavorites();
+      /* this line fixes the store reload on adding the first item,
+      it needs to be improved by use of sockets */
+      if(this.favoritesList.length === 0) this.$router.go();
     });
 
     serverBus.$on('revertEdit', () => {
@@ -100,19 +102,22 @@ export default {
   },
   async updated() {
     await serverBus.$on('filterFavos', async () => {
-      await this.fecthFavorites();
+      await this.fetchFavorites();
     });
   },
   async mounted() {
     this.valid = false;
-    await this.fecthFavorites();
+    await this.fetchFavorites();
     this.getFavoritesList();
   },
   methods: {
-    async fecthFavorites() {
+    async fetchFavorites() {
       const userId = JSON.parse(localStorage.getItem('userObject')).user.id;
+      this.isLoading = true
       const getFavorites = await favoriteService.getFavorites(userId);
-      this.$store.dispatch('favoritesList', getFavorites.data);
+      this.isLoading = false
+      getFavorites.isLoading = false;
+      this.$store.dispatch('favoritesList', getFavorites);
     },
     getFavoritesList() {
       const favorites = this.$store.getters.favoritesList;
@@ -120,9 +125,6 @@ export default {
     },
     editFavorite(data) {
       this.editedFavorite = data;
-    },
-    blurComponent() {
-      this.panel = 0;
     },
   },
   computed: {
@@ -202,5 +204,28 @@ export default {
 }
 .form-override {
   background-color: #e0f1ff !important;
+}
+.loader {
+    border: 5px solid #c2bebe;
+    border-radius: 50% !important;
+    border-top: 5px solid #3498db;
+    width: 130px;
+    height: 130px;
+    -webkit-animation: spin-data-v-ef68022e 2s linear infinite;
+    animation: spin-data-v-ef68022e 2s linear infinite;
+    position: absolute;
+    top: 18%;
+    left: 40%;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style>
