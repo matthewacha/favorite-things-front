@@ -37,36 +37,34 @@
 </template>
 
 <script>
-import { serverBus } from "../main";
+import { serverBus } from '../main';
 
 export default {
-  name: "FilterPane",
+  name: 'FilterPane',
   data: () => ({
-    categories: ["person", "place", "food"],
+    categories: ['person', 'place', 'food'],
     active: undefined,
     filterCriteria: {
       categories: [],
       ranking: undefined,
     },
     min: 0,
-    max: 10
+    max: 10,
   }),
   methods: {
     async filterFav() {
-      await serverBus.$emit("filterFavos");
-      this.$store.dispatch("clearFilter")
-      const filterParams = Object.keys(this.filterCriteria).map(criteria => {
-          return {
-              name: criteria,
-              value: this.filterCriteria[criteria]
-          }
-      })
-      this.$store.dispatch("filterFav", filterParams);
+      await serverBus.$emit('filterFavos');
+      this.$store.dispatch('clearFilter');
+      const filterParams = Object.keys(this.filterCriteria).map(criteria => ({
+        name: criteria,
+        value: this.filterCriteria[criteria],
+      }));
+      this.$store.dispatch('filterFav', filterParams);
     },
-    clearFilter(e){
+    clearFilter(e) {
       e.preventDefault();
-      this.$store.dispatch("clearFilter")
-  }
+      this.$store.dispatch('clearFilter');
+    },
   },
 };
 </script>
@@ -96,4 +94,3 @@ export default {
   width: 100%;
 }
 </style>
-

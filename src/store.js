@@ -43,7 +43,9 @@ export default new Vuex.Store({
     },
     delFavPending: (state, data) => {
       const old = state.favoritesList.filter(fav => fav.id !== data.id);
+      const deleteFavList = state.filteredFavorite.filter(fav => fav.id !== data.id);
       state.favoritesList = old;
+      state.filteredFavorite = deleteFavList;
     },
     editFavPending: (state, data) => {
       const newArray = state.favoritesList.map((fav) => {
@@ -61,6 +63,7 @@ export default new Vuex.Store({
       state.edited = { value: true, favId: data.id };
     },
     filterFav: (state, data) => {
+      console.log(data);
       const newArray = state.favoritesList.filter((fav) => {
         let truthCheck = [];
         truthCheck = data.map((criteria) => {

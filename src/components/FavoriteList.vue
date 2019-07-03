@@ -14,7 +14,7 @@
     </v-card-title>
     <v-card-actions>
       <v-btn flat color="red" @click="delFavorite">Delete</v-btn>
-      <v-btn flat color="blue" @click="editFavorite">Edit</v-btn>
+      <v-btn id="edit-fav" flat color="blue" @click="editFavorite">Edit</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -24,28 +24,27 @@ import favoriteService from '@/services/favoriteService';
 import { serverBus } from '../main';
 
 export default {
-  name: "favoritelist",
+  name: 'favoritelist',
   props: {
-    favoriteItem: Object
+    favoriteItem: Object,
   },
   data: () => ({}),
   methods: {
-      async delFavorite(e){
-          e.preventDefault();
-          this.$store.dispatch('delFavPending', this.favoriteItem);
-          try{
-              const response = await favoriteService.deleteFavorite(this.favoriteItem);
-            //   this.$store.dispatch('delFavConfirm', this.favoriteItem)
-              await serverBus.$emit("submitFavorite")
-          }catch(e){
-              this.$store.dispatch('userError', e.message)
-          }
-      },
-      editFavorite(e){
-          e.preventDefault();
-          serverBus.$emit('editFavorite', this.favoriteItem)
+    async delFavorite(e) {
+      e.preventDefault();
+      this.$store.dispatch('delFavPending', this.favoriteItem);
+      try {
+        const response = await favoriteService.deleteFavorite(this.favoriteItem);
+        //   this.$store.dispatch('delFavConfirm', this.favoriteItem)
+        await serverBus.$emit('submitFavorite');
+      } catch (e) {
+        this.$store.dispatch('userError', e.message);
       }
-  }
+    },
+    editFavorite() {
+      serverBus.$emit('editFavorite', this.favoriteItem);
+    },
+  },
 };
 </script>
 
@@ -66,4 +65,3 @@ export default {
     width: 100%;
 }
 </style>
-

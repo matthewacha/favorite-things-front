@@ -21,18 +21,18 @@
         <FilterPane/>
       </div>
       <div class="favorite-dash_panel--right">
-        <v-expansion-panel v-model="panel">
-          <v-expansion-panel-content>
-            <v-card v-if="favoritesList.length == 0">
-              <v-card-title primary-title>
-                <div id="description-head">
+        <div>
+            <v-card id="no-favs" v-if="favoritesList.length == 0">
+              <v-card-title id="no-fav-title" primary-title>
+                <div class="no-fav-description" id="description-head">
                   <h3
                     class="headline mb-0 description-title"
-                  >you have no favorites start by adding one</h3>
+                  >You have no favorites, start by adding one!</h3>
                 </div>
               </v-card-title>
             </v-card>
-          </v-expansion-panel-content>
+        </div>
+        <v-expansion-panel v-model="panel">
           <v-expansion-panel-content
             v-for="(item,i) in getsFavoritesList || favoritesList"
             :key="i"
@@ -58,19 +58,19 @@
 </template>
 
 <script>
-import router from "@/router";
-import { serverBus } from "../main";
-import favoriteService from "@/services/favoriteService";
-import FavoriteForm from "@/components/FavoritesForm.vue";
-import FavoriteList from "@/components/FavoriteList.vue";
-import FilterPane from "@/components/FilterPane.vue";
+import router from '@/router';
+import { serverBus } from '../main';
+import favoriteService from '@/services/favoriteService';
+import FavoriteForm from '@/components/FavoritesForm.vue';
+import FavoriteList from '@/components/FavoriteList.vue';
+import FilterPane from '@/components/FilterPane.vue';
 
 export default {
-  name: "Favorites",
+  name: 'Favorites',
   components: {
     FavoriteForm,
     FavoriteList,
-    FilterPane
+    FilterPane,
   },
   props: {},
   data() {
@@ -80,26 +80,26 @@ export default {
       panelForm: -1,
       editedFavorite: {},
       edited: { value: false, favId: 0 },
-      cardTitle: "ADD NEW FAVORITE"
+      cardTitle: 'ADD NEW FAVORITE',
     };
   },
   async beforeUpdate() {
-    serverBus.$on("editFavorite", editedFavorite => {
-      this.cardTitle = "EDIT NEW FAVORITE";
+    serverBus.$on('editFavorite', (editedFavorite) => {
+      this.cardTitle = 'EDIT NEW FAVORITE';
       this.panelForm = 0;
     });
 
-    await serverBus.$on("submitFavorite", async () => {
+    await serverBus.$on('submitFavorite', async () => {
       await this.fecthFavorites();
     });
 
-    serverBus.$on("revertEdit", () => {
-      this.cardTitle = "ADD NEW FAVORITE";
+    serverBus.$on('revertEdit', () => {
+      this.cardTitle = 'ADD NEW FAVORITE';
       this.panelForm = -1;
     });
   },
   async updated() {
-    await serverBus.$on("filterFavos", async () => {
+    await serverBus.$on('filterFavos', async () => {
       await this.fecthFavorites();
     });
   },
@@ -110,28 +110,9 @@ export default {
   },
   methods: {
     async fecthFavorites() {
-      const userId = JSON.parse(localStorage.getItem("userObject")).user.id;
+      const userId = JSON.parse(localStorage.getItem('userObject')).user.id;
       const getFavorites = await favoriteService.getFavorites(userId);
-      this.$store.dispatch("favoritesList", getFavorites.data);
-    },
-    validateAndSubmit() {
-      if (this.$refs.form.validate()) {
-        const formData = {
-          customuser: JSON.parse(localStorage.getItem("userObject")).user.id,
-          title: this.title,
-          description: this.description,
-          ranking: this.ranking,
-          category: this.active,
-          metadata: JSON.stringify(this.metadata)
-        };
-        try {
-          const response = favoriteService.postFavorite(formData);
-
-          // this.$store.dispatch("postFavData", response.data);
-        } catch (error) {
-          // this.$store.dispatch("postFavError", response.data);
-        }
-      }
+      this.$store.dispatch('favoritesList', getFavorites.data);
     },
     getFavoritesList() {
       const favorites = this.$store.getters.favoritesList;
@@ -142,29 +123,33 @@ export default {
     },
     blurComponent() {
       this.panel = 0;
-    }
+    },
   },
   computed: {
-    userObject() {
-      const value = this.$store.state.userData.user
-        ? this.$store.state.userData.user.name
-        : "";
-
-      return value;
-    },
     getsFavoritesList() {
       const favorites = this.$store.getters.favoritesList;
       this.favoritesList = favorites;
     },
     isEdited() {
-      const edited = this.$store.state.edited;
+      const { edited } = this.$store.state;
       this.edited = edited;
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style lang="scss">
+.no-fav-description{
+  margin: 0 auto;
+  font-weight: 600;
+  color: #706e6e;
+}
+#no-favs {
+  height: 200px;
+}
+  #no-fav-title{
+    height: inherit;
+  }
 .item-title {
   font-size: 1.3em !important;
   font-weight: 700;
@@ -219,4 +204,3 @@ export default {
   background-color: #e0f1ff !important;
 }
 </style>
-

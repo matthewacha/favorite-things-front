@@ -5,7 +5,7 @@
         v-model="title"
         :rules="titleRules"
         label="Title"
-        :counter="10"
+        :counter="20"
         required
         color="deep-purple"
       ></v-text-field>
@@ -57,18 +57,18 @@
 </template>
 
 <script>
-import favoriteService from "@/services/favoriteService";
-import { serverBus } from "../main";
+import favoriteService from '@/services/favoriteService';
+import { serverBus } from '../main';
 
 export default {
-  name: "favoriteform",
+  name: 'favoriteform',
   props: {},
   beforeUpdate() {
-    serverBus.$on("editFavorite", editedFavorite => {
+    serverBus.$on('editFavorite', (editedFavorite) => {
       this.title = editedFavorite.title;
       this.description = editedFavorite.description;
       this.ranking = editedFavorite.ranking * 2;
-      this.metadata = JSON.parse(editedFavorite.metadata).split('"')[0];
+      this.metadata = JSON.parse(editedFavorite.metadata) !== null ? JSON.parse(editedFavorite.metadata).split('"')[0] : "";
       this.favoriteId = editedFavorite.id;
       this.userId = editedFavorite.customuser;
       this.active = editedFavorite.category;
@@ -79,83 +79,80 @@ export default {
   data() {
     return {
       edit: false,
-      formType: "post",
+      formType: 'post',
       userId: undefined,
       favoriteId: undefined,
       created_at: undefined,
       editedFavorite: {},
-      categories: ["person", "place", "food"],
+      categories: ['person', 'place', 'food'],
       valid: false,
       min: 0,
       max: 10,
       ranking: 0,
-      title: this.editedFavorite || "",
+      title: this.editedFavorite || '',
       titleRules: [
-        v => !!v.trim() || "Name is required",
-        v => (v && v.length <= 20) || "Name must be less than 20 characters"
+        v => !!v.trim() || 'Title is required',
+        v => (v && v.length <= 20) || 'Title must be less than 20 characters',
       ],
-      description: "",
+      description: '',
       descriptionRules: [
-        v => !!v.trim() || "Description is required",
-        v =>
-          (v && v.length <= 250) ||
-          "Description must be less than 250 characters"
+        v => !!v.trim() || 'Description is required',
+        v => (v && v.length <= 250)
+          || 'Description must be less than 250 characters',
       ],
       metadata: undefined,
       active: undefined,
-      filter: ""
+      filter: '',
     };
   },
   methods: {
     async validateAndSubmit() {
       if (this.$refs.form.validate()) {
         const formData = {
-          customuser: JSON.parse(localStorage.getItem("userObject")).user.id,
+          customuser: JSON.parse(localStorage.getItem('userObject')).user.id,
           title: this.title,
           description: this.description,
           ranking: this.ranking,
           category: this.active,
-          metadata: JSON.stringify(this.metadata)
+          metadata: JSON.stringify(this.metadata),
         };
         let editedFavorite;
         try {
           if (!this.edit) {
             const pending = { ...formData, created_at: Date.now() };
-            this.$store.dispatch("postFavPending", pending);
+            this.$store.dispatch('postFavPending', pending);
             const response = await favoriteService.postFavorite(formData);
             // this.$store.dispatch("postFavData", response.data);
           } else {
             editedFavorite = {
               ...formData,
-              id: this.favoriteId
+              id: this.favoriteId,
             };
-            this.$store.dispatch("editFavPending", editedFavorite);
+            this.$store.dispatch('editFavPending', editedFavorite);
             const response = await favoriteService.editFavorite(editedFavorite);
-            console.log('hhhheheheheh')
             this.edit = false;
             this.revertEdit();
             serverBus.$emit('editSuccess', response);
             serverBus.$emit('revertEdit');
             // this.$store.dispatch("editFavData", response.data);
           }
-          serverBus.$emit("submitFavorite")
+          serverBus.$emit('submitFavorite');
         } catch (error) {
-          // this.$store.dispatch("postFavError", response.data);
+          this.$store.dispatch('postFavError', response.data);
         }
       }
     },
     revertEdit() {
-      //   e.preventDefault();
-      this.title = "";
-      this.description = "";
+      this.title = '';
+      this.description = '';
       this.ranking = 0;
       this.metadata = undefined;
-      this.cardTitle = "ADD NEW FAVORITE";
+      this.cardTitle = 'ADD NEW FAVORITE';
       this.favoriteId = undefined;
       this.userId = undefined;
       this.active = undefined;
       this.edit = undefined;
-      serverBus.$emit("revertEdit");
+      serverBus.$emit('revertEdit');
     },
     submitEditFavorite() {
       const formData = {
@@ -164,10 +161,10 @@ export default {
         description: this.description,
         ranking: this.ranking,
         category: this.active,
-        metadata: JSON.stringify(this.metadata)
+        metadata: JSON.stringify(this.metadata),
       };
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -196,4 +193,3 @@ export default {
   height: 100%;
 }
 </style>
-
