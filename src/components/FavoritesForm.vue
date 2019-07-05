@@ -27,7 +27,10 @@
         </v-flex>
 
         <v-flex shrink style="width: 60px">
-          <v-text-field v-model="ranking" class="mt-0" hide-details single-line type="number"></v-text-field>
+          <v-text-field
+          v-model="ranking"
+          class="mt-0"
+          hide-details single-line type="number"></v-text-field>
         </v-flex>
       </v-layout>
 
@@ -67,8 +70,10 @@ export default {
     serverBus.$on('editFavorite', (editedFavorite) => {
       this.title = editedFavorite.title;
       this.description = editedFavorite.description;
-      this.ranking = editedFavorite.ranking * 2;
-      this.metadata = JSON.parse(editedFavorite.metadata) !== null ? JSON.parse(editedFavorite.metadata).split('"')[0] : "";
+      this.ranking = editedFavorite.ranking;
+      this.metadata = JSON.parse(editedFavorite.metadata) !== null
+        ? JSON.parse(editedFavorite.metadata).split('"')[0]
+        : '';
       this.favoriteId = editedFavorite.id;
       this.userId = editedFavorite.customuser;
       this.active = editedFavorite.category;
@@ -122,7 +127,10 @@ export default {
             const pending = { ...formData, created_at: Date.now() };
             this.$store.dispatch('postFavPending', pending);
             const response = await favoriteService.postFavorite(formData);
-            // this.$store.dispatch("postFavData", response.data);
+            this.$notify({
+              text: `${this.title} has been added successfully`,
+              type: 'success',
+            });
           } else {
             editedFavorite = {
               ...formData,
@@ -130,15 +138,24 @@ export default {
             };
             this.$store.dispatch('editFavPending', editedFavorite);
             const response = await favoriteService.editFavorite(editedFavorite);
+            serverBus.$emit('submitFavorite');
+            this.$notify({
+              text: `${this.title} has been edited successfully`,
+              type: 'success',
+            });
             this.edit = false;
-            this.revertEdit();
             serverBus.$emit('editSuccess', response);
             serverBus.$emit('revertEdit');
-            // this.$store.dispatch("editFavData", response.data);
           }
+          this.revertEdit();
           serverBus.$emit('submitFavorite');
         } catch (error) {
-          this.$store.dispatch('postFavError', response.data);
+          this.$notify({
+              text: error.response.data.message,
+              type: 'error',
+            });
+          this.revertEdit();
+          this.$store.dispatch('postFavError', error.error);
         }
       }
     },
@@ -153,16 +170,6 @@ export default {
       this.active = undefined;
       this.edit = undefined;
       serverBus.$emit('revertEdit');
-    },
-    submitEditFavorite() {
-      const formData = {
-        customuser: this.userId,
-        title: this.title,
-        description: this.description,
-        ranking: this.ranking,
-        category: this.active,
-        metadata: JSON.stringify(this.metadata),
-      };
     },
   },
 };

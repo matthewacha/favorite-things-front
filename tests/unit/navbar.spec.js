@@ -1,11 +1,10 @@
+/* eslint-disable no-unused-expressions */
 import Vue from 'vue';
 import { shallowMount, mount, createLocalVue } from '@vue/test-utils';
 import VueRouter from 'vue-router';
 import { expect } from 'chai';
 import Vuetify from 'vuetify';
-import sinon from 'sinon';
 import Vuex from 'vuex';
-import userService from '../../src/services/userService';
 import TheNavbar from '../../src/views/TheNavbar.vue';
 
 Vue.use(Vuex);
@@ -24,19 +23,6 @@ describe('Navbar.vue', () => {
 });
 
 describe('test it works', () => {
-  let actions;
-  let store;
-
-  beforeEach(() => {
-    actions = {
-      user: sinon.stub(),
-    };
-    store = new Vuex.Store({
-      state: {},
-      actions,
-    });
-  });
-
   it('loads the navbar component', () => {
     const wrapper = shallowMount(TheNavbar);
     expect(wrapper.contains('img#imageIcon')).to.be.true;

@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import Vue from 'vue';
 import Vuex from 'vuex';
 
@@ -6,6 +7,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     userData: {},
+    isLoading: false,
     userError: '',
     favoritesList: [],
     filteredFavorite: [],
@@ -15,27 +17,25 @@ export default new Vuex.Store({
   getters: {
     userError: state => state.userError,
     favoritesList: (state) => {
-      let returnedFavorites = [];
+      let returnedFavorites = state.favoritesList;
       if (state.isFiltered) {
         returnedFavorites = state.filteredFavorite;
-      } else {
-        returnedFavorites = state.favoritesList.map((item) => {
-          item.ranking /= 2;
-          return item;
-        });
       }
       return returnedFavorites.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     },
+    favoritesListClean: state => state.favoritesList.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)),
   },
   mutations: {
     user: (state, data) => {
-      state.userData = data;
+      state.userData = data.data;
+      state.isLoading = data.isLoading;
     },
     userError: (state, data) => {
       state.userError = data;
     },
     favoritesList: (state, data) => {
-      state.favoritesList = data;
+      state.favoritesList = data.data;
+      state.isLoading = data.isLoading;
     },
     postFavPending: (state, data) => {
       const old = [...state.favoritesList, data];
@@ -63,7 +63,6 @@ export default new Vuex.Store({
       state.edited = { value: true, favId: data.id };
     },
     filterFav: (state, data) => {
-      console.log(data);
       const newArray = state.favoritesList.filter((fav) => {
         let truthCheck = [];
         truthCheck = data.map((criteria) => {
@@ -71,7 +70,7 @@ export default new Vuex.Store({
             case 'categories':
               return criteria.value.includes(fav.category);
             case 'ranking':
-              return criteria.value / 2 === fav.ranking;
+              return criteria.value === fav.ranking;
             default:
               return null;
           }
@@ -83,6 +82,9 @@ export default new Vuex.Store({
     },
     clearFilter: (state) => {
       state.isFiltered = false;
+    },
+    isLoading: (state, data) => {
+      state.isLoading = data;
     },
   },
   actions: {
@@ -109,6 +111,9 @@ export default new Vuex.Store({
     },
     clearFilter: ({ commit }) => {
       commit('clearFilter');
+    },
+    isLoading: ({ commit }, data) => {
+      commit('isLoading', data);
     },
   },
 });

@@ -24,14 +24,21 @@
         </v-flex>
 
         <v-flex shrink style="width: 60px">
-          <v-text-field v-model="filterCriteria.ranking" class="mt-0" hide-details single-line type="number"></v-text-field>
+          <v-text-field
+            v-model="filterCriteria.ranking"
+            :max="max"
+            :min="min"
+            class="mt-0"
+            hide-details
+            single-line
+            type="number"
+          ></v-text-field>
         </v-flex>
       </v-layout>
     </div>
     <v-card-actions>
-      <!-- <v-btn flat color="blue" >Edit</v-btn> -->
-      <v-btn flat color="blue" @click="filterFav">filter</v-btn>
-      <v-btn flat color="red" @click="clearFilter">clear</v-btn>
+      <v-btn flat color="blue" :disabled="!valid" @click="filterFav">filter</v-btn>
+      <v-btn flat color="red" :disabled="!valid" @click="clearFilter">clear</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -50,7 +57,11 @@ export default {
     },
     min: 0,
     max: 10,
+    valid: false,
   }),
+  updated(){
+    this.validateForm()
+  },
   methods: {
     async filterFav() {
       await serverBus.$emit('filterFavos');
@@ -61,12 +72,20 @@ export default {
       }));
       this.$store.dispatch('filterFav', filterParams);
     },
-    clearFilter(e) {
-      e.preventDefault();
+    clearFilter() {
+      this.filterCriteria.categories = []
+      this.filterCriteria.ranking = 0
+      this.valid = false
       this.$store.dispatch('clearFilter');
+      serverBus.$emit('resetFilterFavos');
     },
+    validateForm(){
+      const rank = this.filterCriteria.ranking
+      const ranking = typeof rank !== undefined && rank > 0 ;
+      const category = this.filterCriteria.categories.length > 0;
+      this.valid = ranking || category;
   },
-};
+},}
 </script>
 
 <style lang="scss" scoped>
@@ -77,8 +96,8 @@ export default {
   border-top: 2px solid #e3e3e3;
 }
 .filter-title {
-    font-weight: 600;
-    color: #706e6e;
+  font-weight: 600;
+  color: #706e6e;
 }
 .filter-types {
   padding: 20px;

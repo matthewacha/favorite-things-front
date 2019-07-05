@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-expressions */
-import Vue from 'vue';
 import { shallowMount, mount, createLocalVue } from '@vue/test-utils';
 import Vuetify from 'vuetify';
 import { expect } from 'chai';
@@ -9,8 +8,7 @@ import FavoriteForm from '../../src/components/FavoritesForm.vue';
 import store from '../../src/store';
 import favoriteService from '../../src/services/favoriteService';
 
-// Vue.use(Vuetify);
-// const { expect } = chai;
+
 const localVue = createLocalVue();
 localVue.use(Vuetify);
 localVue.use(Vuex);
@@ -20,7 +18,7 @@ const userObject = {
   },
 };
 const localStorage = {
-  getItem: user => JSON.stringify(userObject),
+  getItem: (user) => { user; return JSON.stringify(userObject); },
   setItem: () => {},
 };
 global.localStorage = localStorage;
@@ -30,23 +28,8 @@ app.setAttribute('data-app', true);
 document.body.appendChild(app);
 
 describe('FavoriteForm.vue', () => {
-  // let store;
-  let actions;
-  let getters;
-
   beforeEach(() => {
     const serviceMethods = ['postFavorite', 'editFavorite'];
-    actions = {
-      user: sinon.stub(),
-    };
-    getters = {
-      favoritesList: [],
-    };
-    //   store = new Vuex.Store({
-    //     state: {},
-    //     actions,
-    //     getters,
-    //   });
     serviceMethods.map(item => Object.defineProperty(favoriteService, item, {
       value: id => Promise.resolve({
         data: [
