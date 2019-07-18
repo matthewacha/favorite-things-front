@@ -39,7 +39,7 @@
             <template v-slot:header>
               <h2 class="headline mb-0 item-title">{{item.title.toUpperCase()}}</h2>
               <v-rating
-                v-model="item.ranking/2"
+                v-model="item.ranking"
                 color="yellow darken-3"
                 background-color="grey darken-1"
                 empty-icon="$vuetify.icons.ratingFull"

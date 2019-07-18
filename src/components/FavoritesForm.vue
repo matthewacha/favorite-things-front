@@ -91,9 +91,9 @@ export default {
       editedFavorite: {},
       categories: ['person', 'place', 'food'],
       valid: false,
-      min: 0,
-      max: 10,
-      ranking: 0,
+      min: 1,
+      max: 5,
+      ranking: 1,
       title: this.editedFavorite || '',
       titleRules: [
         v => !!v.trim() || 'Title is required',
